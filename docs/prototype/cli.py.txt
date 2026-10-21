@@ -1,0 +1,86 @@
+import argparse
+import json
+import re
+import sys
+from pathlib import Path
+
+VERSION = re.compile(r'(?<!\d)(\d+)\.(\d+)\.(\d+)(?!\d)')
+FROM_PHP = re.compile(r'^\s*FROM\s+(?:--platform=\S+\s+)?(?:docker\.io/)?(?:library/)?php:(\d+\.\d+(?:\.\d+)?)(?:[-@\s]|$)', re.I | re.M)
+MAX_FILE = 2 * 1024 * 1024
+
+
+def read_file(root, rel):
+    path = root / rel
+    if not path.exists():
+        return None
+    if not path.is_file() or path.is_symlink() or path.stat().st_size > MAX_FILE:
+        raise ValueError(f'Unsafe or oversized file: {rel}')
+    return path.read_text(encoding='utf-8')
+
+
+def scan(root, advisories):
+    findings = []
+    constraints = []
+    composer = read_file(root, 'composer.json')
+    if composer:
+        data = json.loads(composer)
+        if not isinstance(data, dict):
+            raise ValueError('composer.json must be an object')
+        constraint = data.get('require', {}).get('php')
+        if constraint:
+            constraints.append({'source': 'composer.json', 'constraint': constraint})
+    lock = read_file(root, 'composer.lock')
+    if lock:
+        data = json.loads(lock)
+        platform = data.get('platform', {}).get('php')
+        if platform:
+            constraints.append({'source': 'composer.lock', 'constraint': platform})
+    docker = read_file(root, 'Dockerfile')
+    if docker:
+        for match in FROM_PHP.finditer(docker):
+            raw = match.group(1)
+            version = tuple(map(int, raw.split('.')))
+            if len(version) != 3:
+                findings.append({'type': 'unresolved_runtime', 'source': 'Dockerfile', 'value': raw, 'reason': 'Floating minor tag; actual patch unknown'})
+                continue
+            for item in advisories:
+                if item['series'] == f'{version[0]}.{version[1]}':
+                    fixed = tuple(map(int, item['fixed'].split('.')))
+                    if version < fixed:
+                        findings.append({'type': 'vulnerable_runtime', 'source': 'Dockerfile', 'version': raw, 'advisory': item['id'], 'fixed': item['fixed']})
+    if not docker:
+        findings.append({'type': 'unresolved_runtime', 'reason': 'No Dockerfile; running PHP version not established'})
+    return {'status': 'action_required' if findings else 'unverified', 'constraints': constraints, 'findings': findings,
+            'next_steps': ['Verify actual runtime version and image digest', 'Update PHP to a vendor-supported patched version', 'Run integration and security tests in staging', 'Back up data and prepare rollback', 'Require human approval before production rollout'],
+            'limitations': 'Static inventory only; not proof of safety or compatibility.'}
+
+
+def main(argv=None):
+    parser = argparse.ArgumentParser(description='Read-only PHP runtime migration assessment')
+    parser.add_argument('project', type=Path)
+    parser.add_argument('--advisories', type=Path, required=True, help='Audited JSON advisory catalog')
+    args = parser.parse_args(argv)
+    try:
+        root = args.project.resolve(strict=True)
+        if not root.is_dir():
+            raise ValueError('Project must be a directory')
+        if args.advisories.is_symlink() or args.advisories.stat().st_size > MAX_FILE:
+            raise ValueError('Unsafe advisory catalog')
+        catalog = json.loads(args.advisories.read_text(encoding='utf-8'))
+        if not isinstance(catalog, list):
+            raise ValueError('Advisory catalog must be a list')
+        for entry in catalog:
+            if not isinstance(entry, dict) or not all(k in entry for k in ('id', 'series', 'fixed')):
+                raise ValueError('Malformed advisory')
+            if not re.fullmatch(r'\d+\.\d+', entry['series']) or not re.fullmatch(r'\d+\.\d+\.\d+', entry['fixed']):
+                raise ValueError('Malformed advisory version')
+        report = scan(root, catalog)
+        print(json.dumps(report, ensure_ascii=False, indent=2))
+        return 2 if report['findings'] else 0
+    except (OSError, ValueError, KeyError, TypeError, json.JSONDecodeError) as exc:
+        print(json.dumps({'status': 'error', 'message': str(exc)}), file=sys.stderr)
+        return 3
+
+
+if __name__ == '__main__':
+    sys.exit(main())

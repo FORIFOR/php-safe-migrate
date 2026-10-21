@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "updated": "2026-10-22",
+  "coverage": "Curated PHP runtime advisories only; not a complete vulnerability database",
+  "advisories": [
+    {
+      "ids": ["CVE-2026-109618", "CVE-2026-109619"],
+      "source": "https://www.php.net/archive/2026.php#2026-10-21-5",
+      "fixed_by_series": {
+        "8.2": "8.2.35",
+        "8.3": "8.3.36",
+        "8.4": "8.4.27",
+        "8.5": "8.5.12"
+      }
+    }
+  ]
+}

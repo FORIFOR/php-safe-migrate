@@ -1,0 +1,30 @@
+import tempfile
+import unittest
+from pathlib import Path
+
+from phpsafe.prototype import scan
+
+CATALOG = [{'id': 'TEST-ONLY', 'series': '8.3', 'fixed': '8.3.36'}]
+
+class ScanTests(unittest.TestCase):
+    def test_vulnerable(self):
+        with tempfile.TemporaryDirectory() as d:
+            Path(d, 'Dockerfile').write_text('FROM php:8.3.35-fpm\n')
+            r = scan(Path(d), CATALOG)
+            self.assertEqual(r['findings'][0]['type'], 'vulnerable_runtime')
+    def test_fixed(self):
+        with tempfile.TemporaryDirectory() as d:
+            Path(d, 'Dockerfile').write_text('FROM php:8.3.36-fpm\n')
+            self.assertEqual(scan(Path(d), CATALOG)['findings'], [])
+    def test_floating(self):
+        with tempfile.TemporaryDirectory() as d:
+            Path(d, 'Dockerfile').write_text('FROM php:8.3-fpm\n')
+            self.assertEqual(scan(Path(d), CATALOG)['findings'][0]['type'], 'unresolved_runtime')
+    def test_missing(self):
+        with tempfile.TemporaryDirectory() as d:
+            self.assertEqual(scan(Path(d), CATALOG)['status'], 'action_required')
+    def test_symlink_rejected(self):
+        with tempfile.TemporaryDirectory() as d:
+            Path(d, 'Dockerfile').symlink_to('/etc/passwd')
+            with self.assertRaises(ValueError):
+                scan(Path(d), CATALOG)
