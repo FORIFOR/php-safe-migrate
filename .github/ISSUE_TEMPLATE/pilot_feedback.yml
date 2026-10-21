@@ -1,0 +1,38 @@
+name: Enterprise pilot feedback
+description: Share a redacted evaluation result without credentials or proprietary code.
+title: "Pilot feedback: "
+labels: [pilot-feedback]
+body:
+  - type: markdown
+    attributes:
+      value: "Please remove internal hostnames, image names, package names, credentials, and customer data before posting. Use private Security Advisories for vulnerabilities."
+  - type: dropdown
+    id: outcome
+    attributes:
+      label: Outcome
+      options:
+        - Found a previously unknown runtime risk
+        - Confirmed a known runtime risk
+        - Found a false or incomplete signal
+        - Could not complete the evaluation
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Redacted setup
+      description: PHP version, input file types, and assessment command; omit confidential details.
+    validations:
+      required: true
+  - type: textarea
+    id: observation
+    attributes:
+      label: Expected and observed behavior
+      description: Include relevant finding/blocker types and how you verified them.
+    validations:
+      required: true
+  - type: textarea
+    id: usefulness
+    attributes:
+      label: Effect on the migration decision
+      description: What did the report help you decide, and what evidence was still missing?

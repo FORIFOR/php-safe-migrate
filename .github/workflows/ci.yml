@@ -16,5 +16,5 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - run: python -m pip install -e '.[dev]'
-      - run: ruff check src/phpsafe tests
+      - run: ruff check src/phpsafe tests scripts
       - run: pytest -q

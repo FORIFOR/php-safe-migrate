@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="480" viewBox="0 0 1200 480" role="img" aria-labelledby="title desc">
+  <title id="title">PHP Safe Migrate assessment flow</title>
+  <desc id="desc">Static inventory, official PHP advisory comparison, candidate version, then isolated validation and human approval. No production changes.</desc>
+  <defs>
+    <linearGradient id="bg" x2="1" y2="1"><stop stop-color="#0a1225"/><stop offset="1" stop-color="#122b39"/></linearGradient>
+    <linearGradient id="accent" x2="1"><stop stop-color="#39d8a7"/><stop offset="1" stop-color="#86efd0"/></linearGradient>
+    <filter id="shadow"><feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#000" flood-opacity=".24"/></filter>
+  </defs>
+  <rect width="1200" height="480" rx="28" fill="url(#bg)"/>
+  <circle cx="1100" cy="30" r="180" fill="#39d8a7" opacity=".055"/>
+  <circle cx="70" cy="455" r="150" fill="#76a7ff" opacity=".06"/>
+  <rect x="52" y="45" width="56" height="56" rx="16" fill="url(#accent)"/>
+  <path d="M68 72h24M68 81h16" stroke="#0a2130" stroke-width="5" stroke-linecap="round"/>
+  <text x="127" y="79" fill="#f2fcff" font-family="Arial, sans-serif" font-size="32" font-weight="700">PHP Safe Migrate</text>
+  <text x="52" y="137" fill="#b3c7d0" font-family="Arial, sans-serif" font-size="19">Evidence before change. PHP stays PHP.</text>
+  <g filter="url(#shadow)">
+    <rect x="52" y="185" width="246" height="168" rx="20" fill="#182b3d" stroke="#2b4b58"/>
+    <rect x="336" y="185" width="246" height="168" rx="20" fill="#182b3d" stroke="#2b4b58"/>
+    <rect x="620" y="185" width="246" height="168" rx="20" fill="#182b3d" stroke="#2b4b58"/>
+    <rect x="904" y="185" width="246" height="168" rx="20" fill="#182b3d" stroke="#2b4b58"/>
+  </g>
+  <g fill="#39d8a7" font-family="Arial, sans-serif" font-size="16" font-weight="700">
+    <text x="74" y="219">01 / INVENTORY</text><text x="358" y="219">02 / COMPARE</text><text x="642" y="219">03 / PLAN</text><text x="926" y="219">04 / FUTURE</text>
+  </g>
+  <g fill="#f2fcff" font-family="Arial, sans-serif" font-size="24" font-weight="700">
+    <text x="74" y="261">Declared PHP</text><text x="358" y="261">CVE + EOL</text><text x="642" y="261">Target candidate</text><text x="926" y="261">Human decision</text>
+  </g>
+  <g fill="#b3c7d0" font-family="Arial, sans-serif" font-size="16">
+    <text x="74" y="298">Docker + Composer</text><text x="74" y="323">Read-only inspection</text>
+    <text x="358" y="298">Official PHP evidence</text><text x="358" y="323">Unknowns stay visible</text>
+    <text x="642" y="298">Static constraints only</text><text x="642" y="323">No compatibility claim</text>
+    <text x="926" y="298">Isolated tests + backup</text><text x="926" y="323">Explicit approval</text>
+  </g>
+  <g stroke="#39d8a7" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none">
+    <path d="M305 270h20m-8-8 8 8-8 8"/><path d="M589 270h20m-8-8 8 8-8 8"/><path d="M873 270h20m-8-8 8 8-8 8"/>
+  </g>
+  <rect x="52" y="387" width="1098" height="54" rx="15" fill="#0e2031" stroke="#2b4b58"/>
+  <circle cx="78" cy="414" r="7" fill="#f8c66a"/>
+  <text x="98" y="421" fill="#d8e8ec" font-family="Arial, sans-serif" font-size="17">Current release: static assessment only · production is never changed by this tool</text>
+</svg>

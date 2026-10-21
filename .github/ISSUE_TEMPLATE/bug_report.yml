@@ -1,0 +1,27 @@
+name: Bug report
+description: Report an incorrect assessment using a sanitized, reproducible fixture.
+title: "Bug: "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: "Do not post credentials, proprietary code, or undisclosed vulnerabilities. Use private Security Advisories for security issues."
+  - type: textarea
+    id: fixture
+    attributes:
+      label: Minimal sanitized input
+      description: Include only the Dockerfile, Compose, or Composer lines needed to reproduce the issue.
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: result
+    attributes:
+      label: Expected and actual result
+      description: Include finding/blocker types and the command used.
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Tool commit or version
