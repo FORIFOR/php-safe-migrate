@@ -1,6 +1,6 @@
 # 企業向け評価ガイド
 
-PHP Safe Migrateの現行版は、**読み取り専用の静的診断**と、別コマンドによる**限定的な隔離検証**を提供します。自動移行や本番反映の承認には使えません。
+PHP Safe Migrateの現行版は、**読み取り専用の静的診断**と、別コマンドによる**限定的な隔離検証**を提供します。自動移行や本番反映の承認には使えません。企業導入で必要となる保証の対象と必須証拠は[本番移行の安全性をどう保証するか](PRODUCTION_ASSURANCE.ja.md)にまとめています。
 
 1. 本番秘密情報を含まないPHPリポジトリを1件選び、隔離した評価環境で実行します。ルートのDockerfileまたはCompose、可能なら`composer.json`と`composer.lock`を用意してください。
 2. Python 3.11以降でインストールし、`php-safe-migrate /path/to/project --refresh --format json > assessment.json`を実行します。`--refresh`はPHP公式サイトに接続します。対象のPHPコードやComposerスクリプトは実行しません。

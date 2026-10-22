@@ -63,7 +63,7 @@ php-safe-migrate /path/to/php-project --refresh --format markdown > assessment.m
 3. 候補版でのComposer依存関係、拡張、既存テスト、HTTP応答、DBの整合性を**自社の隔離環境**で検証します。
 4. バックアップと復旧を確認し、本番変更には別途明示的な承認を設けます。
 
-詳しい手順と評価基準は[企業向け評価ガイド](docs/ENTERPRISE_EVALUATION.ja.md)にまとめています。効果や誤検出は、機密情報を除いたうえで[評価フィードバック](https://github.com/FORIFOR/php-safe-migrate/issues/new?template=pilot_feedback.yml)に共有してください。質問は[Discussions](https://github.com/FORIFOR/php-safe-migrate/discussions)、脆弱性報告は[非公開のSecurity Advisory](https://github.com/FORIFOR/php-safe-migrate/security/advisories/new)をご利用ください。
+詳しい手順と評価基準は[企業向け評価ガイド](docs/ENTERPRISE_EVALUATION.ja.md)にまとめています。[本番移行の安全性をどう保証するか](docs/PRODUCTION_ASSURANCE.ja.md)には、個別環境で必要な証拠と切替停止条件を明記しています。現行版は本番投入の承認を発行しません。効果や誤検出は、機密情報を除いたうえで[評価フィードバック](https://github.com/FORIFOR/php-safe-migrate/issues/new?template=pilot_feedback.yml)に共有してください。質問は[Discussions](https://github.com/FORIFOR/php-safe-migrate/discussions)、脆弱性報告は[非公開のSecurity Advisory](https://github.com/FORIFOR/php-safe-migrate/security/advisories/new)をご利用ください。
 
 非本番の検証用コピーでは、[隔離環境での限定的な互換性検証](docs/ISOLATED_VERIFICATION.ja.md)を試せます。ローカルの旧版・新版PHPイメージで拡張と指定したPHPテストを実行し、Composer PHARとロックファイルがあればプラットフォーム要件も確認します。結果は本番投入の承認ではありません。
 
