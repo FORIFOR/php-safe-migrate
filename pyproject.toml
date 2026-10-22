@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "php-safe-migrate"
-version = "0.2.0"
+version = "0.3.0"
 description = "Fail-closed PHP runtime migration assessment"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -16,6 +16,7 @@ dev = ["pytest>=8,<10", "ruff>=0.8,<1"]
 
 [project.scripts]
 php-safe-migrate = "phpsafe.cli:main"
+php-safe-migrate-verify = "phpsafe.verify_cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

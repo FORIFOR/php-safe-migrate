@@ -22,6 +22,19 @@ python scripts/verify_effectiveness.py
 pytest -q
 ```
 
-This is evidence that the **static detector** handles these declared inputs. It does not prove that a running server uses the declared image, that distribution backports are present or absent, that all CVEs are covered, or that an upgrade preserves application behavior and data. Docker runtime validation was not run because the local Docker daemon was unavailable. P2 isolation and compatibility checks remain unimplemented.
+This is evidence that the **static detector** handles these declared inputs. It does not prove that a running server uses the declared image, that distribution backports are present or absent, that all CVEs are covered, or that an upgrade preserves application behavior and data.
+
+## Limited Docker verification — 2026-10-22
+
+Colima's Docker daemon was available. A disposable fixture was run in pre-pulled `php:8.3.36-cli` (local image ID `sha256:74caa458ad8d6c5e401eb9f8841a62faeab9b7be42b54cd37986d7685f857618`) and `php:8.4.27-cli` (`sha256:a4ae1f57e22b89a0a69c5e085b3010ee727d094e1542d249e48a01bec3c44810`). Both images are fixed-version releases from the official PHP advisory. The verifier used no network, a read-only project mount, a non-root user and resource limits.
+
+| Check | Observed |
+| --- | --- |
+| `ext-json` in both images | Present |
+| `probe.php` in both images | Exit `0`; identical output SHA-256 `7df4c3a5d2d577e3d08a941a2c77ba83defcee03618320b2e3643854336df3e4` |
+| `version-probe.php` | Different output hashes; verifier returned `blocked` |
+| Composer `check-platform-reqs --lock --no-dev` | Exit `0` in both images for a **synthetic** lock file with no packages; not evidence of real dependency compatibility |
+
+The Composer PHAR for this local experiment was extracted from a pre-pulled `composer:2` image (local digest `sha256:d0c32820c62cc860fddd22adceed4eeda7698b093a7a88d503414172ce400626`). The synthetic lock was created only in a disposable local work directory and is not part of the repository. Both successful and mismatch runs returned exit code `2` because HTTP, DB, backup, rollout, and rollback evidence is still missing. This tests the limited verifier's execution and stopping behavior, **not** an application migration or data preservation. See the [Japanese verification guide](ISOLATED_VERIFICATION.ja.md).
 
 For a first trial, inspect [the demo fixture](../examples/demo-project/) and compare its report with this table. For a company system, follow the [enterprise evaluation guide](ENTERPRISE_EVALUATION.md) and verify the deployed image digest separately.

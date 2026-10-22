@@ -6,7 +6,7 @@ Move vulnerable PHP runtimes to supported, patched PHP releases while preserving
 
 ## Trust and decision model
 
-The target project is untrusted input. Static inspection happens on the host with size limits and symlink rejection. Any future execution of Composer, PHP, tests, containers, HTTP probes, or database tools must occur in an isolated, resource-limited environment without production credentials or network access by default. Target files are never modified during assessment.
+The target project is untrusted input. Static inspection happens on the host with size limits and symlink rejection. The explicit Docker verifier runs PHP and Composer with no network, a read-only project mount and resource limits; future HTTP probes and database tools require similarly controlled non-production environments. Never include production credentials in verification inputs. Target files are never modified during assessment or verification.
 
 `action_required` means at least one known vulnerability or EOL finding. `unverified` means the known catalog found no issue, but safety is unproven. A candidate version means only that supported release metadata and the recognized subset of Composer PHP constraints allow it. Unknown constraints, extensions, actual image digests, distribution backports, application behavior, lock freshness, and data compatibility remain blockers.
 
@@ -21,12 +21,13 @@ The target project is untrusted input. Static inspection happens on the host wit
 ## P1: migration preparation
 
 - Implemented: choose non-downgrade candidates from supported official releases and check a conservative subset of Composer PHP constraints.
-- Pending: verify Composer dependency resolution in an isolated target runtime, inspect extension binaries and compatibility, follow nested Dockerfiles and Compose semantics, generate reviewable Docker/Compose patches, pin immutable image digests.
+- Implemented in a separate, explicitly invoked command: run locked Composer platform checks (when a trusted PHAR and lock file are supplied) and check declared extension presence inside two pre-pulled local PHP images. The command pins both local image IDs, uses no network, and never claims deployment readiness.
+- Pending: verify Composer dependency resolution and lock freshness, extension behavior and binary compatibility, follow nested Dockerfiles and Compose semantics, generate reviewable Docker/Compose patches, pin registry digests.
 - A patch must never be applied automatically. Unknown or conflicting constraints stop preparation.
 
 ## P2: verification
 
-Pending: run old and new PHP in isolated Docker environments with no production secrets; run existing tests, compare HTTP API responses with normalized volatile fields, compare DB schema and data on disposable copies, and stop on any unexplained difference. Record exact images, commands, exit codes, and test artifacts.
+Partially implemented: an explicit PHP probe runs in old and new pre-pulled Docker images with no network, read-only project mount, non-root user and resource limits. Exit codes and output hashes are compared; a mismatch is blocked. No production secrets should be included in the project copy. Pending: invoke full test suites safely, compare HTTP API responses with normalized volatile fields, compare DB schema and data on disposable copies, and stop on any unexplained difference. Record richer artifacts without leaking secrets. Docker isolation has residual risk and needs a trusted host.
 
 ## P3: approved cutover
 

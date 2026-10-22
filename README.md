@@ -1,8 +1,8 @@
 # PHP Safe Migrate
 
-**脆弱なPHP環境を、安全性を確認しながら移行するためのOSSプロジェクトです。** 現在公開しているのは、その第一段階となる**読み取り専用の静的診断ツール**です。DockerとComposerの設定から宣言されたPHP版を調べ、PHP公式のサポート情報と収録済みのCVEに照らして、調査すべき点と移行先候補をレポートします。
+**脆弱なPHP環境を、安全性を確認しながら移行するためのOSSプロジェクトです。** 中心となる**読み取り専用の静的診断ツール**は、DockerとComposerの設定から宣言されたPHP版を調べ、PHP公式のサポート情報と収録済みのCVEに照らして、調査すべき点と移行先候補をレポートします。別コマンドで、非本番の検証用コピーを隔離コンテナで確認する限定的な機能もあります。
 
-PHPのコードをGoやRustへ変換したり、LLMでアプリケーションを書き換えたりしません。対象のPHPコード、Composerスクリプト、Dockerイメージは実行せず、設定ファイルや本番環境も変更しません。
+PHPのコードをGoやRustへ変換したり、LLMでアプリケーションを書き換えたりしません。通常の診断コマンドは対象のPHPコード、Composerスクリプト、Dockerイメージを実行せず、設定ファイルや本番環境も変更しません。隔離検証コマンドは明示的に指定したPHPテストをコンテナ内で実行します。
 
 [English README](README.en.md) · [![CI](https://github.com/FORIFOR/php-safe-migrate/actions/workflows/ci.yml/badge.svg)](https://github.com/FORIFOR/php-safe-migrate/actions/workflows/ci.yml) · [Apache-2.0](LICENSE)
 
@@ -65,6 +65,8 @@ php-safe-migrate /path/to/php-project --refresh --format markdown > assessment.m
 
 詳しい手順と評価基準は[企業向け評価ガイド](docs/ENTERPRISE_EVALUATION.ja.md)にまとめています。効果や誤検出は、機密情報を除いたうえで[評価フィードバック](https://github.com/FORIFOR/php-safe-migrate/issues/new?template=pilot_feedback.yml)に共有してください。質問は[Discussions](https://github.com/FORIFOR/php-safe-migrate/discussions)、脆弱性報告は[非公開のSecurity Advisory](https://github.com/FORIFOR/php-safe-migrate/security/advisories/new)をご利用ください。
 
+非本番の検証用コピーでは、[隔離環境での限定的な互換性検証](docs/ISOLATED_VERIFICATION.ja.md)を試せます。ローカルの旧版・新版PHPイメージで拡張と指定したPHPテストを実行し、Composer PHARとロックファイルがあればプラットフォーム要件も確認します。結果は本番投入の承認ではありません。
+
 ツールにはテレメトリーはありません。`--refresh`を指定した場合のみPHP公式サイトへ接続します。ただし、レポートには社内のイメージ名やComposerパッケージ名が含まれ得ます。外部へ共有する前に内容を確認してください。
 
 ## 実装状況
@@ -76,7 +78,8 @@ php-safe-migrate /path/to/php-project --refresh --format markdown > assessment.m
 | ComposerとDockerの解析 | 静的解析の一部を実装。曖昧な入力は未検証扱い |
 | JSON・Markdownレポート | 実装済み |
 | 移行先候補 | PHP版の静的制約に基づく提案のみ |
-| パッチ生成・隔離環境での互換性検証 | 未実装 |
+| パッチ生成 | 未実装 |
+| 隔離環境での互換性検証 | PHP拡張・指定テスト・Composerプラットフォーム要件の一部を実装 |
 | 動作・データ比較、段階的切替、ロールバック | 未実装 |
 
 [検証記録](docs/VALIDATION.md)では、PHP公式が示す8.2〜8.5の修正境界など11ケースの静的判断が期待どおりだったことを再現できます。**実運用での移行成功を示す結果ではありません。** 設計上の制約と今後の実装は[仕様書](docs/SPEC.md)を参照してください。

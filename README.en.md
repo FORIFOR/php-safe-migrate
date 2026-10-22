@@ -4,7 +4,7 @@
 
 ![PHP Safe Migrate assessment flow](assets/flow.svg)
 
-**Find known PHP runtime risks before planning an upgrade. Keep PHP as PHP.** PHP Safe Migrate reads Docker and Composer metadata, compares declared PHP versions with official release information and a curated advisory catalog, and produces a reviewable report. It does not run application code, edit the project, or deploy to production.
+**Find known PHP runtime risks before planning an upgrade. Keep PHP as PHP.** The default scanner reads Docker and Composer metadata, compares declared PHP versions with official release information and a curated advisory catalog, and produces a reviewable report. It does not run application code or edit the project. A separate, explicit Docker command runs a limited test probe on a disposable copy. Neither command deploys to production.
 
 [![CI](https://github.com/FORIFOR/php-safe-migrate/actions/workflows/ci.yml/badge.svg)](https://github.com/FORIFOR/php-safe-migrate/actions/workflows/ci.yml) · [Apache-2.0](LICENSE) · [日本語の企業向け評価ガイド](docs/ENTERPRISE_EVALUATION.ja.md)
 
@@ -44,7 +44,8 @@ Start with one non-production repository. Compare the report with the actual dep
 | Composer and Docker inventory | Static subset; ambiguous inputs remain blockers |
 | JSON and Markdown reports | Implemented |
 | Target version candidates | Static PHP constraints only; no compatibility assurance |
-| Patch generation, isolated compatibility tests, data comparison, rollout | Planned |
+| Isolated compatibility checks | Limited extension, explicit PHP probe, and locked Composer platform checks; see the [Japanese guide](docs/ISOLATED_VERIFICATION.ja.md) |
+| Patch generation, HTTP/DB comparison, rollout | Planned |
 
 The scanner reads only root-level `composer.json`, `composer.lock`, `Dockerfile`, and common Compose filenames. It rejects symlinks and oversized files. It never invokes Composer, PHP, Docker, or project scripts. Exit code `2` indicates findings or blockers; `3` indicates invalid input. Exit code `0` is reserved for a future fully verified assessment and is not currently returned. **No report from the current release is approval to deploy.**
 
