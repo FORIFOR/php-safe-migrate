@@ -20,7 +20,7 @@ php-safe-migrate-verify examples/verification-fixture \
 
 別のDocker contextを使う場合は`--docker-context colima`のように指定します。`version-probe.php`を選ぶとPHP版の差が出るため、出力不一致が`blocked`になることを確認できます。
 
-Composerを確認する場合は、信頼できる入手元から確認したローカルのComposer PHARを`--composer-phar /path/to/composer.phar`で指定します。対象プロジェクトには`composer.lock`が必要です。`check-platform-reqs --lock --no-dev`を、ネットワークなし・プラグインなし・スクリプトなしで実行します。**これはロック済み依存関係のプラットフォーム要件の検査であり、依存関係の再解決、ロックファイルの鮮度、PHP拡張の振る舞いは保証しません。** PHARはプロジェクトと別の読み取り専用マウントに置きます。
+Composerを確認する場合は、信頼できる入手元から確認したローカルのComposer PHARを`--composer-phar /path/to/composer.phar`で指定します。対象プロジェクトには`composer.lock`が必要です。`check-platform-reqs --lock --no-dev`を、ネットワークなし・プラグインなし・スクリプトなしで実行します。ツールは`composer.json`と`composer.lock`のPHP制約も、対応する構文の範囲で保守的に照合します。たとえば`^8.3`は8.4を許容し、`~8.3.0`は許容しません。**依存関係の再解決、ロックファイルの鮮度、PHP拡張の振る舞いは保証しません。** PHARはプロジェクトと別の読み取り専用マウントに置きます。
 
 コンテナはネットワークなし、読み取り専用のプロジェクトマウント、権限削除、非rootユーザー、プロセス・メモリ・CPU制限で実行します。対象のDockerfileやComposeファイルをビルド・起動することはありません。使うイメージの内容自体が信頼できるかは利用者が確認する必要があります。
 

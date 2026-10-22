@@ -13,7 +13,7 @@ import time
 import uuid
 from pathlib import Path
 
-from phpsafe.assessment import _requirements, read_json
+from phpsafe.assessment import _requirements, permits, read_json
 
 OUTPUT_LIMIT = 64 * 1024
 TIMEOUT = 90
@@ -193,6 +193,20 @@ def verify(
             "required_extensions": required_extensions,
             "missing_extensions": missing,
         }
+        php_constraints: list[dict] = []
+        for requirement in requirements:
+            if requirement["name"] != "php":
+                continue
+            try:
+                allowed = permits(requirement["constraint"], item["php_version"])
+            except ValueError:
+                allowed = None
+            outcome = "pass" if allowed is True else "fail" if allowed is False else "unknown"
+            php_constraints.append({"source": requirement["source"], "constraint": requirement["constraint"], "result": outcome})
+            if allowed is not True:
+                blockers.append(f"{label} image has {outcome} PHP constraint in {requirement['source']}")
+                hard_failure = True
+        item["php_constraints"] = php_constraints
         if relative_probe:
             result = _run_php(docker, image_id, project, [f"/project/{relative_probe}"], composer_phar)
             item["probe"] = _capture(result)

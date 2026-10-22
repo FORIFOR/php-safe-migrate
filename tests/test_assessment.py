@@ -68,6 +68,11 @@ def test_composer_constraint_subset(constraint: str, expected: bool | None) -> N
     assert permits(constraint, "8.3.36") is expected
 
 
+def test_composer_caret_and_tilde_boundaries() -> None:
+    assert permits("^8.3", "8.4.27") is True
+    assert permits("~8.3.0", "8.4.27") is False
+
+
 def test_official_table_parser() -> None:
     parser = TableParser()
     parser.feed("<table><tbody><tr><td><a>8.3</a></td><td>23 Nov 2023</td><td>x</td><td>31 Dec 2025</td><td>x</td><td>31 Dec 2027</td></tr></tbody></table>")

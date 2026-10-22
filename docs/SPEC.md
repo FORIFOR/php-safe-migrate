@@ -21,7 +21,7 @@ The target project is untrusted input. Static inspection happens on the host wit
 ## P1: migration preparation
 
 - Implemented: choose non-downgrade candidates from supported official releases and check a conservative subset of Composer PHP constraints.
-- Implemented in a separate, explicitly invoked command: run locked Composer platform checks (when a trusted PHAR and lock file are supplied) and check declared extension presence inside two pre-pulled local PHP images. The command pins both local image IDs, uses no network, and never claims deployment readiness.
+- Implemented in a separate, explicitly invoked command: conservatively check recognized root/lock/package PHP constraints against actual PHP versions; run locked Composer platform checks when a trusted PHAR and lock file are supplied; and check declared extension presence inside two pre-pulled local PHP images. The verifier pins both local image IDs, uses no network, and never claims deployment readiness.
 - Pending: verify Composer dependency resolution and lock freshness, extension behavior and binary compatibility, follow nested Dockerfiles and Compose semantics, generate reviewable Docker/Compose patches, pin registry digests.
 - A patch must never be applied automatically. Unknown or conflicting constraints stop preparation.
 

@@ -96,6 +96,24 @@ def test_missing_extension_blocks_migration(tmp_path: Path, monkeypatch: pytest.
     assert any("lacks declared extensions" in item for item in result["blockers"])
 
 
+def test_root_php_constraint_blocks_new_runtime(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    (tmp_path / "composer.json").write_text(json.dumps({"require": {"php": "~8.3.0"}}))
+    monkeypatch.setattr(verification, "_image_id", lambda docker, image: f"sha256:{image}")
+
+    def fake_run(command: list[str], timeout: int = 90) -> subprocess.CompletedProcess[bytes]:
+        if any("get_loaded_extensions" in item for item in command):
+            output = b"[]"
+        else:
+            output = b"8.3.36" if "sha256:old" in command else b"8.4.27"
+        return subprocess.CompletedProcess(command, 0, output, b"")
+
+    monkeypatch.setattr(verification, "_run", fake_run)
+    result = verification.verify(tmp_path, "old", "new")
+    assert result["status"] == "blocked"
+    assert result["checks"]["old"]["php_constraints"][0]["result"] == "pass"
+    assert result["checks"]["new"]["php_constraints"][0]["result"] == "fail"
+
+
 def test_composer_failure_is_blocked_without_exposing_output(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:

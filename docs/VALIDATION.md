@@ -34,7 +34,13 @@ Colima's Docker daemon was available. A disposable fixture was run in pre-pulled
 | `probe.php` in both images | Exit `0`; identical output SHA-256 `7df4c3a5d2d577e3d08a941a2c77ba83defcee03618320b2e3643854336df3e4` |
 | `version-probe.php` | Different output hashes; verifier returned `blocked` |
 | Composer `check-platform-reqs --lock --no-dev` | Exit `0` in both images for a **synthetic** lock file with no packages; not evidence of real dependency compatibility |
+| Synthetic root PHP constraint `~8.3.0` | PHP 8.3.36 passed; PHP 8.4.27 failed both Composer's lock check and the verifier's conservative PHP constraint check |
+| Declared `ext-imagick` absent from both images | Verifier returned `blocked` |
+| Container probe attempted network access and project write | Network connection failed and project remained unchanged under the configured Docker restrictions |
+| Container probe produced over 64 KiB of output | Verifier stopped the run; no `phpsafe-*` containers remained |
 
 The Composer PHAR for this local experiment was extracted from a pre-pulled `composer:2` image (local digest `sha256:d0c32820c62cc860fddd22adceed4eeda7698b093a7a88d503414172ce400626`). The synthetic lock was created only in a disposable local work directory and is not part of the repository. Both successful and mismatch runs returned exit code `2` because HTTP, DB, backup, rollout, and rollback evidence is still missing. This tests the limited verifier's execution and stopping behavior, **not** an application migration or data preservation. See the [Japanese verification guide](ISOLATED_VERIFICATION.ja.md).
+
+The Docker failure checks can be repeated on a trusted host with pre-pulled images using `python scripts/verify_docker_behavior.py --composer-phar /path/to/trusted-composer.phar` (add `--docker-context colima` where appropriate). The script uses temporary, disposable project copies and does not touch a production system.
 
 For a first trial, inspect [the demo fixture](../examples/demo-project/) and compare its report with this table. For a company system, follow the [enterprise evaluation guide](ENTERPRISE_EVALUATION.md) and verify the deployed image digest separately.
