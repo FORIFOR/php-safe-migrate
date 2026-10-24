@@ -49,7 +49,7 @@ Start with one non-production repository. Compare the report with the actual dep
 
 The scanner reads only root-level `composer.json`, `composer.lock`, `Dockerfile`, and common Compose filenames. It rejects symlinks and oversized files. It never invokes Composer, PHP, Docker, or project scripts. Exit code `2` indicates findings or blockers; `3` indicates invalid input. Exit code `0` is reserved for a future fully verified assessment and is not currently returned. **No report from the current release is approval to deploy.**
 
-If you only have a website URL, this release cannot infer the running PHP version from it. Public headers and HTML can provide an initial clue, but you still need deployed-runtime and vendor-patch evidence. The [Japanese URL-first guide](docs/URL_FIRST_EVALUATION.ja.md) shows how a site owner can collect that evidence before using the repository scanner.
+If you only have a website URL for a site you control, run `php-safe-migrate-url https://example.com/ --i-control-domain --refresh`. It fetches the HTTPS homepage once, does not follow redirects, and reports public PHP version hints as unverified. No hint or conflicting hints remain unknown. Even a displayed version cannot establish the deployed runtime or vendor backports. See the [Japanese URL-first guide](docs/URL_FIRST_EVALUATION.ja.md) for the next evidence to collect.
 
 Read the [specification](docs/SPEC.md), [security policy](SECURITY.md), and [dependency license review](docs/LICENSE_REVIEW.md). The original prototype source, tests, and specification are preserved in `docs/prototype/` and `docs/PROTOTYPE_SPEC.md`; the archived CLI is not installed.
 

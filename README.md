@@ -42,7 +42,13 @@ php-safe-migrate /path/to/php-project --refresh --format markdown > assessment.m
 
 `--refresh`は、php.netから**サポート期限と最新リリース情報**を取得します。CVEカタログ全体を自動更新する機能ではありません。指定しなければ同梱の取得日時付きスナップショットを使い、30日を超えると未確認事項として報告します。レポートは標準出力に書き、対象プロジェクトのファイルは変更しません。
 
-**URLしか分からない場合:** 現行版はURLからPHP版を推定しません。外部に見えるヘッダーやHTMLは調査の入口になりますが、実際の配備版や修正適用を確定できません。[URLから始める評価ガイド](docs/URL_FIRST_EVALUATION.ja.md)に、サイト担当者が制作会社・運用会社から集める情報と、診断から移行判断までの手順をまとめました。
+**URLしか分からない場合:** 管理するサイトのHTTPS URLから公開ヘッダーとHTMLのPHP表記を1回だけ確認できます。
+
+```sh
+php-safe-migrate-url https://example.com/ --i-control-domain --refresh > url-assessment.json
+```
+
+このコマンドはサイトを管理する人が明示的に実行するものです。HTTPSトップページのみを取得し、リダイレクトは追いません。バージョンが見えない場合や表示が食い違う場合は`unknown`です。表示があっても**実際の配備版やベンダー修正の適用は確認できません**。常に`deployment_ready: false`を返します。[URLから始める評価ガイド](docs/URL_FIRST_EVALUATION.ja.md)に次の確認方法をまとめています。
 
 現在読み取るのは、プロジェクト直下の`Dockerfile`、一般的な名前のComposeファイル、`composer.json`、`composer.lock`です。シンボリックリンクと大きすぎる入力は拒否します。サブディレクトリのDockerfile、実際に配備されたイメージのdigest、OSベンダーのバックポートは確定できません。
 
@@ -78,7 +84,8 @@ php-safe-migrate /path/to/php-project --refresh --format markdown > assessment.m
 | PHP公式のサポート期限・最新リリース取得 | 実装済み。HTTPSで取得、同梱スナップショットあり |
 | CVE・影響版・EOLの照合 | 一部実装。**収録済みのCVEに限定** |
 | ComposerとDockerの解析 | 静的解析の一部を実装。曖昧な入力は未検証扱い |
-| JSON・Markdownレポート | 実装済み |
+| JSON・Markdownレポート | リポジトリ診断は両形式、URL簡易診断はJSON |
+| 管理ドメインのURL簡易診断 | 実装済み。HTTPSトップページの公開情報のみ、管理者の明示確認が必要 |
 | 移行先候補 | PHP版の静的制約に基づく提案のみ |
 | パッチ生成 | 未実装 |
 | 隔離環境での互換性検証 | PHP拡張・指定テスト・Composerプラットフォーム要件の一部を実装 |

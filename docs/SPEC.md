@@ -12,7 +12,7 @@ The target project is untrusted input. Static inspection happens on the host wit
 
 ## P0: diagnosis
 
-External URL checks are a possible first step for site owners who do not yet have repository access, but are not implemented. Public HTTP headers and HTML may hide, misstate, or omit the running PHP version and cannot prove patch status. A future URL entry point must verify domain control, prevent SSRF across redirects and DNS changes, limit traffic, protect input privacy, and return unknown when evidence is missing. It must not upgrade external hints into a deployment-safe decision. See the [Japanese URL-first evaluation guide](URL_FIRST_EVALUATION.ja.md).
+The URL CLI is an optional first step for owners who lack repository access. It requires an explicit control attestation and fetches one HTTPS homepage, with DNS checked for non-public addresses and the connection pinned to a checked IP. It never follows redirects, accepts paths or credentials, or issues a deployment-safe decision. Public headers and HTML may hide, misstate, or omit the running PHP version and cannot prove patch status. A public web service needs stronger domain control verification, rate limiting, and privacy controls before accepting arbitrary targets. See the [Japanese URL-first evaluation guide](URL_FIRST_EVALUATION.ja.md).
 
 - Fetch supported branch deadlines and latest versions from php.net over HTTPS on request. Bundle a dated snapshot and fail closed when stale.
 - Match exact observed Docker PHP tags against a curated catalog of CVEs and fixed versions from official PHP advisories. Catalog provenance and coverage are explicit. No completeness claim.
